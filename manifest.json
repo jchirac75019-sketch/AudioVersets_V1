@@ -1,0 +1,84 @@
+{
+  "name": "AudioVersets - Offline Quran Quiz",
+  "short_name": "AudioVersets",
+  "description": "Apprenez le Coran avec des quiz audio hors ligne. Étudiez les surahs, suivez vos progrès et testez vos connaissances n'importe quand, n'importe où.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2c3e50",
+  "background_color": "#ffffff",
+  "dir": "rtl",
+  "lang": "ar-SA",
+  
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  
+  "categories": ["education", "productivity"],
+  
+  "shortcuts": [
+    {
+      "name": "Commencer un Quiz",
+      "short_name": "Quiz",
+      "description": "Commencer une nouvelle session de quiz Coran",
+      "url": "/?shortcut=quiz",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Télécharger l'Audio",
+      "short_name": "Audio",
+      "description": "Télécharger les fichiers audio pour utilisation hors ligne",
+      "url": "/?shortcut=audio",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  
+  "prefer_related_applications": false,
+  "related_applications": []
+}

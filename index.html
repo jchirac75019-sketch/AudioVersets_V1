@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='1em' font-size='1em'>🕌</text></svg>">
+
+  <title>Quiz Coran - تطبيق اختبار القرآن</title>
+  <!-- Manifest inline (data URL) -->
+  <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Amiri&display=swap">
+<!-- <link rel="stylesheet" href="style.css"> -->
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--blue:#1e40af;--green:#059669;--red:#dc2626;--bg1:#ffffff;--bg2:#f8fafc;--text:#1f2937}
+    html,body{height:100%}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans","Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:var(--text);direction:rtl}
+    .app-container{max-width:1200px;margin:0 auto;padding:16px 16px 40px}
+    .page{display:none;animation:fade .25s ease}
+    .page.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .header{background:rgba(255,255,255,.95);border-radius:18px;padding:24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1);margin:16px 0}
+    .header h1{color:var(--blue);font-size:clamp(22px,5vw,34px);margin-bottom:8px}
+    .subtitle{color:#64748b}
+    .card{background:rgba(255,255,255,.95);border-radius:18px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);margin:16px 0}
+    .section{background:rgba(248,250,252,.88);border:2px solid rgba(30,64,175,.12);border-radius:14px;padding:16px;margin-bottom:16px}
+    .section h3{color:var(--blue);text-align:center;margin-bottom:12px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .group{display:flex;flex-direction:column;gap:6px}
+    label{font-weight:600;color:#374151;font-size:14px}
+    select,input[type=number]{padding:12px 14px;border:2px solid #e5e7eb;border-radius:12px;background:#fff;font-size:16px;direction:rtl}
+    select:focus,input[type=number]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,64,175,.12)}
+    .error{display:none;margin-top:4px;font-size:12px;color:var(--red);background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 10px}
+    .error.show{display:block}
+    .stats{text-align:center;margin:12px 0;padding:14px;background:rgba(30,64,175,.08);border:2px solid rgba(30,64,175,.18);border-radius:14px;color:var(--blue);font-weight:700}
+    .highlight{color:var(--red);font-weight:800}
+    .blue{color:var(--blue);font-weight:800}
+    .btn{padding:14px 22px;border:none;border-radius:12px;font-weight:700;cursor:pointer;transition:.2s;min-width:120px}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn-primary{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff}
+    .btn-neutral{background:#64748b;color:#fff}
+    .btn-green{background:var(--green);color:#fff}
+    .btn-red{background:var(--red);color:#fff}
+    .btn-purple{background:#7c3aed;color:#fff}
+    .btn-amber{background:#f59e0b;color:#fff}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .quiz-header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .badges{display:flex;flex-wrap:wrap;gap:10px}
+    .badge{background:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 4px 14px rgba(0,0,0,.08);font-weight:700;color:#374151}
+    .badge .ok{color:var(--green)} .badge .ko{color:var(--red)}
+    .qwrap{min-height:360px}
+    .qcounter{text-align:center;color:#64748b;font-weight:700;margin-bottom:14px}
+    .qtext{text-align:center;font-weight:700;line-height:1.7;background:#fff;border-radius:14px;padding:18px;border-right:5px solid var(--blue)}
+    .verset,.info{background:#f8fafc;border-radius:14px;padding:18px;border-right:5px solid var(--blue);margin:14px 0;text-align:center}
+
+.verset, .info {
+  font-family: 'Amiri', serif;       /* Police coranique élégante */
+  font-size: 1.2rem;                  /* Augmente légèrement la taille */
+  line-height: 1.8;                   /* Confort de lecture */
+  background: #f8fafc;
+  border-right: 5px solid var(--blue);
+  padding: 18px;
+  border-radius: 14px;
+  margin: 14px 0;
+  text-align: center;
+}
+
+/* Fond jaune très clair uniquement pour la ligne du verset dans #info */
+#info > div:first-child {
+  background-color: #fff9c4;  /* jaune très clair */
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+/* Met le texte coranique en gras dans le modèle اختبار الصوت */
+// #info > div:first-child span#tAudio {
+  // font-weight: 700;
+// }
+
+/* Met en évidence le numéro du verset avec fond jaune */
+.info .highlight-verse {
+  background-color: #ffeb3b;  /* jaune clair */
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--blue);         /* texte en bleu pour contraste */
+  font-weight: 700;
+}
+
+/* Fond jaune pour le numéro du verset */
+#info div span#nAudio {
+  background-color: #ffeb3b;  /* jaune clair */
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Verset coranique sur une ligne, scroll horizontal */
+#info > div:first-child span#tAudio {
+  display: inline-block;
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100vw;
+  direction: rtl;
+  padding: 2px 6px;
+  vertical-align: middle;
+}
+#info > div:first-child {
+  overflow-x: auto;
+  max-width: 100vw;
+  white-space: nowrap;
+}
+
+/* Fond jaune pour numéro du verset et nom de la sourate en mode texte */
+#textMode .qtext span#vNum,
+#textMode .qtext span#sName {
+  background-color: #fff9c4;  /* jaune très clair */
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* Mode texte : verset et nom de la sourate en gras et taille augmentée */
+#textMode .qtext span#vNum,
+#textMode .qtext span#sName {
+  background-color: #fff9c4;      /* fond jaune très clair */
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 700;               /* gras */
+  font-size: 1.4rem;              /* taille plus grande */
+}
+
+.flex-audio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;        /* Permet le retour à la ligne sur mobile */
+}
+
+.flex-audio audio {
+  flex: 1 1 auto;         /* Le lecteur prend l'espace disponible */
+  min-width: 200px;       /* Largeur minimale */
+  max-width: 100%;        /* Ne dépasse jamais la largeur du conteneur */
+}
+
+.flex-audio button {
+  white-space: normal;    /* Permet le retour à la ligne du texte */
+  min-width: 120px;       /* Largeur minimale du bouton */
+  flex: 0 1 auto;         /* Le bouton s'adapte à son contenu */
+  padding: 10px 16px;     /* Padding ajusté pour mobile */
+  font-size: 14px;        /* Taille de texte adaptée */
+}
+
+/* Media query pour mobile */
+@media (max-width: 768px) {
+  .flex-audio {
+    flex-direction: column;  /* Empile le lecteur et le bouton verticalement */
+    gap: 8px;
+  }
+  
+  .flex-audio audio {
+    width: 100%;             /* Le lecteur prend toute la largeur */
+    max-width: 100%;
+  }
+  
+  .flex-audio button {
+    width: 100%;             /* Le bouton prend toute la largeur */
+    max-width: 100%;
+    font-size: 15px;         /* Légèrement plus grand sur mobile */
+    padding: 12px 20px;
+  }
+}
+
+    .controls{text-align:center;margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .audio{margin-bottom:12px;text-align:center}
+    .audio audio{width:100%;max-width:420px}
+    .history .item{background:#fff;border-radius:12px;margin:10px 0;padding:12px;border-right:5px solid;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .history .item.ok{background:#f0fdf4;border-color:var(--green)}
+    .history .item.ko{background:#fef2f2;border-color:var(--red)}
+    .nosleep{position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0}
+    .loading{display:inline-block;width:22px;height:22px;border:3px solid #e5e7eb;border-top:3px solid var(--blue);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (max-width:768px){.grid2{grid-template-columns:1fr} .quiz-header{flex-direction:column;align-items:stretch}}
+    @media (prefers-color-scheme:dark){
+      body{background:linear-gradient(135deg,#1e293b 0%,#334155 100%);color:#e5e7eb}
+      .header,.card{background:rgba(17,24,39,.92)}
+      .section{background:rgba(31,41,55,.88)}
+      .qtext,.verset,.history .item{background:rgba(30,41,59,.95);color:#e5e7eb}
+      select,input[type=number]{background:#0f172a;color:#f8fafc;border-color:#334155}
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Accueil -->
+    <div id="home" class="page active">
+      <div class="header">
+        <h1>🕌 اختبار القرآن الكريم</h1>
+        <div class="subtitle">Quiz des Versets Coraniques - مصحف حفص 604 صفحة</div>
+      </div>
+
+      <div class="card">
+        <div class="section">
+          <h3>تحديد نطاق السور</h3>
+          <div class="grid2">
+            <div class="group">
+              <label>من السورة:</label>
+              <select id="startSurah"></select>
+            </div>
+            <div class="group">
+              <label>إلى السورة:</label>
+              <select id="endSurah"></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>تحديد نطاق الآيات</h3>
+          <div class="grid2">
+            <div class="group">
+              <label>من الآية:</label>
+              <input type="number" id="startVerse" min="1" value="1">
+              <div id="startVerseErr" class="error"></div>
+            </div>
+            <div class="group">
+              <label>إلى الآية:</label>
+              <input type="number" id="endVerse" min="1" value="6">
+              <div id="endVerseErr" class="error"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>إعدادات الاختبار</h3>
+          <div class="grid2">
+            <div class="group">
+              <label>عدد المحاولات:</label>
+              <select id="attempts">
+                <option value="5">5 محاولات</option>
+                <option value="10">10 محاولات</option>
+                <option value="15">15 محاولة</option>
+                <option value="20">20 محاولة</option>
+                <option value="infinite">لا نهائي</option>
+              </select>
+            </div>
+            <div class="group">
+              <label>نوع الاختبار:</label>
+              <select id="mode">
+                <option value="text">اختبار النص</option>
+                <option value="audio">اختبار الصوت</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" id="reciterSection">
+          <h3>اختيار القارئ</h3>
+          <select id="reciter"></select>
+        </div>
+
+        <div class="stats">
+          إجمالي الآيات: <span id="totalVerses" class="highlight">0</span>
+        </div>
+        
+         <div id="preloadSection" style="display:none;text-align:center;margin-bottom:16px;padding:12px;background:#e0f2fe;border-radius:8px">
+        <div style="font-size:12px;color:#0369a1;margin-bottom:8px">📥 <strong>Mode Hors Ligne</strong></div>
+        <button id="preloadBtn" class="btn btn-amber" style="width:100%">⬇️ Télécharger les audios (Option 2) </button>
+       <div id="preloadProgress" style="font-size:11px;color:#0369a1;margin-top:6px;display:none">Chargement: <span id="preloadCount">0</span>/<span id="preloadTotal">0</span></div>
+     </div>
+        <button id="startBtn" class="btn btn-primary" style="width:100%">ابدأ الاختبار</button>
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div id="quiz" class="page">
+      <div class="card">
+        <div class="quiz-header">
+          <div class="badges">
+            <div class="badge">صحيح: <span id="ok" class="ok">0</span></div>
+            <div class="badge">خطأ: <span id="ko" class="ko">0</span></div>
+            <div class="badge">الوقت: <span id="time">00:00:00</span></div>
+            <div class="badge">السؤال: <span><span id="cur">1</span> / <span id="tot">0</span></span></div>
+          </div>
+          <button id="homeBtn" class="btn btn-neutral">العودة للرئيسية</button>
+        </div>
+
+        <div class="qwrap">
+          <div id="qCounter" class="qcounter"></div>
+
+          <!-- Mode texte -->
+          <div id="textMode">
+            <div class="qtext">
+              ما هو نص الآية رقم <span id="vNum" class="blue">1</span> من سورة <span id="sName" class="blue">الفاتحة</span>؟
+            </div>
+            <div id="vText" class="verset" style="display:none"></div>
+            <div class="controls">
+              <button id="showVerse" class="btn btn-primary">عرض النص</button>
+              <div id="answersText" style="display:none;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+                <button id="okBtn1" class="btn btn-green">إجابة صحيحة</button>
+                <button id="koBtn1" class="btn btn-red">إجابة خاطئة</button>
+              </div>
+              <button id="next1" class="btn btn-purple" style="display:none">السؤال التالي</button>
+            </div>
+          </div>
+
+          <!-- Mode audio -->
+          <div id="audioMode" style="display:none">
+            <div class="audio flex-audio">
+            <audio id="player" controls></audio>
+            <button id="replay" class="btn btn-amber">إعادة التشغيل / تشغيل الصوت</button>
+        </div>
+
+            <div class="qtext">حدد معلومات الآية المتلوة:</div>
+            <div id="info" class="verset" style="display:none;text-align:right">
+              <div>النص: <span id="tAudio"></span></div>
+              <div>السورة: <span id="sAudio" class="blue"></span></div>
+              <div>رقم الآية: <span id="nAudio" class="blue"></span></div>
+              <div>رقم الصفحة: <span id="pAudio" class="blue"></span></div>
+              <div>رقم الجزء: <span id="jAudio" class="blue"></span></div>
+            </div>
+            <div class="controls">
+              <button id="showInfo" class="btn btn-primary">عرض المعلومات</button>
+              <div id="answersAudio" style="display:none;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+                <button id="okBtn2" class="btn btn-green">إجابة صحيحة</button>
+                <button id="koBtn2" class="btn btn-red">إجابة خاطئة</button>
+              </div>
+              <button id="next2" class="btn btn-purple" style="display:none">التالي</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Résultats -->
+    <div id="results" class="page">
+      <div class="card">
+        <div class="quiz-header">
+          <h3 style="color:var(--blue)">نتائج الاختبار</h3>
+          <button id="newQuiz" class="btn btn-neutral">اختبار جديد</button>
+        </div>
+        <div class="grid2">
+          <div class="card" style="margin:0">
+            <div class="badges" style="gap:14px">
+              <div class="badge" style="background:linear-gradient(135deg,#059669,#10b981);color:#fff">
+                <div style="font-size:26px;font-weight:800" id="fOk">0</div>إجابات صحيحة
+              </div>
+              <div class="badge" style="background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff">
+                <div style="font-size:26px;font-weight:800" id="fKo">0</div>إجابات خاطئة
+              </div>
+              <div class="badge" style="background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff">
+                <div style="font-size:26px;font-weight:800" id="fTime">00:00:00</div>إجمالي الوقت
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:10px;color:#64748b">
+              <div>بداية الاختبار: <span id="tStart"></span></div>
+              <div>نهاية الاختبار: <span id="tEnd"></span></div>
+              <div>النسبة المئوية: <span id="pct" class="highlight">0%</span></div>
+            </div>
+          </div>
+          <div class="card history" style="margin:0">
+            <h3 style="color:var(--blue);text-align:center;margin-bottom:10px">تفاصيل الإجابات</h3>
+            <div id="hist"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vidéo anti-sommeil (muted, inline) -->
+  <video id="nosleep" class="nosleep" muted playsinline loop>
+    <source type="video/mp4" src="data:video/mp4;base64,AAAAHGZ0eXBNNFYgAAACAGlzb21pc28yYXZjMQAAAAhmcmVlAAAGF21kYXTeBAAAbGliZmFhYyAxLjI4AABCAJMgBDIARIiIQIiIgAAAAlBmBQ==">
+  </video>
+
+  <script>
+    // Données sourates (num + nom arabe + nb versets)
+    const SOURATES = [
+      {num:1, nom:"الفاتحة", versets:7},{num:2, nom:"البقرة", versets:286},{num:3, nom:"آل عمران", versets:200},
+      {num:4, nom:"النساء", versets:176},{num:5, nom:"المائدة", versets:120},{num:6, nom:"الأنعام", versets:165},
+      {num:7, nom:"الأعراف", versets:206},{num:8, nom:"الأنفال", versets:75},{num:9, nom:"التوبة", versets:129},
+      {num:10, nom:"يونس", versets:109},{num:11, nom:"هود", versets:123},{num:12, nom:"يوسف", versets:111},
+      {num:13, nom:"الرعد", versets:43},{num:14, nom:"إبراهيم", versets:52},{num:15, nom:"الحجر", versets:99},
+      {num:16, nom:"النحل", versets:128},{num:17, nom:"الإسراء", versets:111},{num:18, nom:"الكهف", versets:110},
+      {num:19, nom:"مريم", versets:98},{num:20, nom:"طه", versets:135},{num:21, nom:"الأنبياء", versets:112},
+      {num:22, nom:"الحج", versets:78},{num:23, nom:"المؤمنون", versets:118},{num:24, nom:"النور", versets:64},
+      {num:25, nom:"الفرقان", versets:77},{num:26, nom:"الشعراء", versets:227},{num:27, nom:"النمل", versets:93},
+      {num:28, nom:"القصص", versets:88},{num:29, nom:"العنكبوت", versets:69},{num:30, nom:"الروم", versets:60},
+      {num:31, nom:"لقمان", versets:34},{num:32, nom:"السجدة", versets:30},{num:33, nom:"الأحزاب", versets:73},
+      {num:34, nom:"سبأ", versets:54},{num:35, nom:"فاطر", versets:45},{num:36, nom:"يس", versets:83},
+      {num:37, nom:"الصافات", versets:182},{num:38, nom:"ص", versets:88},{num:39, nom:"الزمر", versets:75},
+      {num:40, nom:"غافر", versets:85},{num:41, nom:"فصلت", versets:54},{num:42, nom:"الشورى", versets:53},
+      {num:43, nom:"الزخرف", versets:89},{num:44, nom:"الدخان", versets:59},{num:45, nom:"الجاثية", versets:37},
+      {num:46, nom:"الأحقاف", versets:35},{num:47, nom:"محمد", versets:38},{num:48, nom:"الفتح", versets:29},
+      {num:49, nom:"الحجرات", versets:18},{num:50, nom:"ق", versets:45},{num:51, nom:"الذاريات", versets:60},
+      {num:52, nom:"الطور", versets:49},{num:53, nom:"النجم", versets:62},{num:54, nom:"القمر", versets:55},
+      {num:55, nom:"الرحمن", versets:78},{num:56, nom:"الواقعة", versets:96},{num:57, nom:"الحديد", versets:29},
+      {num:58, nom:"المجادلة", versets:22},{num:59, nom:"الحشر", versets:24},{num:60, nom:"الممتحنة", versets:13},
+      {num:61, nom:"الصف", versets:14},{num:62, nom:"الجمعة", versets:11},{num:63, nom:"المنافقون", versets:11},
+      {num:64, nom:"التغابن", versets:18},{num:65, nom:"الطلاق", versets:12},{num:66, nom:"التحريم", versets:12},
+      {num:67, nom:"الملك", versets:30},{num:68, nom:"القلم", versets:52},{num:69, nom:"الحاقة", versets:52},
+      {num:70, nom:"المعارج", versets:44},{num:71, nom:"نوح", versets:28},{num:72, nom:"الجن", versets:28},
+      {num:73, nom:"المزمل", versets:20},{num:74, nom:"المدثر", versets:56},{num:75, nom:"القيامة", versets:40},
+      {num:76, nom:"الإنسان", versets:31},{num:77, nom:"المرسلات", versets:50},{num:78, nom:"النبأ", versets:40},
+      {num:79, nom:"النازعات", versets:46},{num:80, nom:"عبس", versets:42},{num:81, nom:"التكوير", versets:29},
+      {num:82, nom:"الانفطار", versets:19},{num:83, nom:"المطففين", versets:36},{num:84, nom:"الانشقاق", versets:25},
+      {num:85, nom:"البروج", versets:22},{num:86, nom:"الطارق", versets:17},{num:87, nom:"الأعلى", versets:19},
+      {num:88, nom:"الغاشية", versets:26},{num:89, nom:"الفجر", versets:30},{num:90, nom:"البلد", versets:20},
+      {num:91, nom:"الشمس", versets:15},{num:92, nom:"الليل", versets:21},{num:93, nom:"الضحى", versets:11},
+      {num:94, nom:"الشرح", versets:8},{num:95, nom:"التين", versets:8},{num:96, nom:"العلق", versets:19},
+      {num:97, nom:"القدر", versets:5},{num:98, nom:"البينة", versets:8},{num:99, nom:"الزلزلة", versets:8},
+      {num:100, nom:"العاديات", versets:11},{num:101, nom:"القارعة", versets:11},{num:102, nom:"التكاثر", versets:8},
+      {num:103, nom:"العصر", versets:3},{num:104, nom:"الهمزة", versets:9},{num:105, nom:"الفيل", versets:5},
+      {num:106, nom:"قريش", versets:4},{num:107, nom:"الماعون", versets:7},{num:108, nom:"الكوثر", versets:3},
+      {num:109, nom:"الكافرون", versets:6},{num:110, nom:"النصر", versets:3},{num:111, nom:"المسد", versets:5},
+      {num:112, nom:"الإخلاص", versets:4},{num:113, nom:"الفلق", versets:5},{num:114, nom:"الناس", versets:6}
+    ];
+
+    const RECITERS = [
+  {id:"alafasy", name:"مشاري راشد العفاسي", path:"Alafasy_128kbps"},
+  {id:"shatri", name:"أبو بكر الشاطري", path:"Abu_Bakr_Ash-Shaatree_128kbps"},
+  {id:"hudhaify", name:"علي الحذيفي", path:"Hudhaify_128kbps"},
+  {id:"husary", name:"محمود خليل الحصري", path:"Husary_128kbps"},
+  {id:"minshawi", name:"محمد صديق المنشاوي", path:"Minshawi_Mujawwad_128kbps"},
+  {id:"muaiqly", name:"ماهر المعيقلي", path:"Maher_AlMuaiqly_64kbps"},
+  {id:"ghamdi", name:"سعد الغامدي", path:"Ghamadi_40kbps"},
+  {id:"sudais", name:"عبد الرحمن السديس", path:"Abdurrahmaan_As-Sudais_192kbps"}
+];
+
+    // Elements
+    const E = {
+      pages:{home:byId('home'),quiz:byId('quiz'),results:byId('results')},
+      startSurah:byId('startSurah'),endSurah:byId('endSurah'),
+      startVerse:byId('startVerse'),endVerse:byId('endVerse'),
+      startVerseErr:byId('startVerseErr'),endVerseErr:byId('endVerseErr'),
+      attempts:byId('attempts'),mode:byId('mode'),reciter:byId('reciter'),reciterSection:byId('reciterSection'),
+      totalVerses:byId('totalVerses'),startBtn:byId('startBtn'),
+      homeBtn:byId('homeBtn'),ok:byId('ok'),ko:byId('ko'),time:byId('time'),cur:byId('cur'),tot:byId('tot'),
+      vNum:byId('vNum'),sName:byId('sName'),vText:byId('vText'),showVerse:byId('showVerse'),
+      answersText:byId('answersText'),okBtn1:byId('okBtn1'),koBtn1:byId('koBtn1'),next1:byId('next1'),
+      player:byId('player'),replay:byId('replay'),showInfo:byId('showInfo'),
+      info:byId('info'),tAudio:byId('tAudio'),sAudio:byId('sAudio'),nAudio:byId('nAudio'),pAudio:byId('pAudio'),jAudio:byId('jAudio'),
+      answersAudio:byId('answersAudio'),okBtn2:byId('okBtn2'),koBtn2:byId('koBtn2'),next2:byId('next2'),
+      fOk:byId('fOk'),fKo:byId('fKo'),fTime:byId('fTime'),tStart:byId('tStart'),tEnd:byId('tEnd'),pct:byId('pct'),hist:byId('hist'),
+      newQuiz:byId('newQuiz'),nosleep:byId('nosleep'),qCounter:byId('qCounter'),textMode:byId('textMode'),audioMode:byId('audioMode')
+    };
+    function byId(id){return document.getElementById(id)}
+
+    // État
+    let state = {
+      startTime:null,endTime:null,activeMs:0,lastTick:null,active:true,timer:null,
+      ok:0,ko:0,questions:[],idx:0,mode:"text",reciter:"hudhaify",history:[]
+    };
+
+    // Wake Lock pour empêcher la mise en veille
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+    try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock activé');
+      }
+    } catch (err) {
+      console.error('Wake Lock échoué:', err);
+    }
+  }
+
+  function releaseWakeLock() {
+    if (wakeLock !== null) {
+      wakeLock.release().then(() => {
+        wakeLock = null;
+        console.log('Wake Lock désactivé');
+      });
+    }
+  }
+
+// Charger les versets depuis le fichier JSON local
+let versesData = null;
+
+async function loadVersesData() {
+  try {
+    const response = await fetch('./data/verses.json');
+    versesData = await response.json();
+    console.log('✅ Versets chargés:', Object.keys(versesData).length, 'versets');
+  } catch (e) {
+    console.error('❌ Erreur lors du chargement des versets:', e);
+  }
+}
+
+// Charger les versets dès le démarrage
+loadVersesData();
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      initSelectors();
+      bindEvents();
+      updateTotals();
+      toggleReciter();
+  
+   // Wake Lock : réactiver quand l'utilisateur revient sur l'app
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && state.timer !== null) {
+          requestWakeLock();
+        }
+      });
+  
+   // Anti-sommeil vidéo (fallback pour navigateurs sans Wake Lock)
+      const arm = () => E.nosleep.play().catch(()=>{});
+      document.addEventListener('click', arm, {once:true});
+      document.addEventListener('touchstart', arm, {once:true});
+  
+   // Service Worker inline
+      registerSW();
+  
+   // Restaurer l'état si l'utilisateur revient après avoir quitté l'app
+      restoreQuizIfNeeded();
+    });
+
+    function initSelectors(){
+      // remplir sourates
+      for(const s of SOURATES){
+        const opt1=document.createElement('option'); opt1.value=s.num; opt1.textContent=`${s.num}. ${s.nom}`; E.startSurah.appendChild(opt1);
+        const opt2=document.createElement('option'); opt2.value=s.num; opt2.textContent=`${s.num}. ${s.nom}`; E.endSurah.appendChild(opt2);
+      }
+      E.startSurah.value="1"; E.endSurah.value="114";
+      E.startVerse.value="1"; setEndMax();
+      // récitateur
+      for(const r of RECITERS){const o=document.createElement('option');o.value=r.id;o.textContent=`${r.name}`;E.reciter.appendChild(o)}
+      E.reciter.value="hudhaify";
+    }
+
+     // Pré-charger les audios
+async function preloadAudios() {
+  const a = parseInt(E.startSurah.value), b = parseInt(E.endSurah.value);
+  const va = parseInt(E.startVerse.value||"1"), vb = parseInt(E.endVerse.value||"1");
+  const reciterId = E.reciter.value;
+  const r = RECITERS.find(x=>x.id===reciterId) || RECITERS[0];
+  
+  const preloadBtn = document.getElementById('preloadBtn');
+  const preloadProgress = document.getElementById('preloadProgress');
+  const preloadCount = document.getElementById('preloadCount');
+  const preloadTotal = document.getElementById('preloadTotal');
+  
+  const audiosToLoad = [];
+  for(let s=a; s<=b; s++){
+    const S = getSurah(s);
+    const from = (s===a) ? va : 1;
+    const to = (s===b) ? Math.min(vb, S.versets) : S.versets;
+    for(let v=from; v<=to; v++){
+      const ss = String(s).padStart(3,'0');
+      const vv = String(v).padStart(3,'0');
+      audiosToLoad.push(`./audios/${r.path}/${ss}${vv}.mp3`);
+    }
+  }
+  
+  preloadTotal.textContent = audiosToLoad.length;
+  preloadProgress.style.display = 'block';
+  preloadBtn.disabled = true;
+  preloadBtn.textContent = '⏳ Chargement...';
+  
+  let loaded = 0;
+  const cache = await caches.open('quiz-coran-v1');
+  
+  for(const url of audiosToLoad){
+    try {
+      const response = await fetch(url);
+      if(response.ok) {
+        await cache.put(url, response.clone());
+        console.log('💾 Cached:', url);
+      }
+      loaded++;
+      preloadCount.textContent = loaded;
+    } catch(e){
+      console.warn('⚠️ Erreur:', url, e.message);
+      loaded++;
+      preloadCount.textContent = loaded;
+    }
+  }
+  
+  preloadBtn.disabled = false;
+  preloadBtn.textContent = '✅ ' + loaded + ' audios chargés !';
+  console.log('✅ Tous les audios sont en cache !');
+  setTimeout(()=>{ preloadBtn.textContent = '⬇️ Télécharger les audios (Option 2)'; }, 3000);
+}
+
+    function bindEvents(){
+  E.startSurah.addEventListener('change', ()=>{clearQuizState(); validateStart();updateTotals()});
+  E.endSurah.addEventListener('change', ()=>{clearQuizState(); setEndMax();validateEnd();updateTotals()});
+  E.startVerse.addEventListener('input', ()=>{clearQuizState(); validateStart();updateTotals()});
+  E.endVerse.addEventListener('input', ()=>{clearQuizState(); validateEnd();updateTotals()});
+  E.mode.addEventListener('change', ()=>{
+    clearQuizState();
+    toggleReciter();
+    const preloadSection = document.getElementById('preloadSection');
+    preloadSection.style.display = E.mode.value === 'audio' ? 'block' : 'none';
+  });
+  E.attempts.addEventListener('change', ()=>{clearQuizState()});
+  E.reciter.addEventListener('change', ()=>{clearQuizState()});
+
+  E.startBtn.addEventListener('click', startQuiz);
+  E.homeBtn.addEventListener('click', () => goto('home'));
+  E.newQuiz.addEventListener('click', () => goto('home'));
+
+  // texte
+  E.showVerse.addEventListener('click', showVerseText);
+  E.okBtn1.addEventListener('click', ()=>record(true));
+  E.koBtn1.addEventListener('click', ()=>record(false));
+  E.next1.addEventListener('click', next);
+
+  // audio
+  E.replay.addEventListener('click', ()=>{E.player.currentTime=0;E.player.play().catch(()=>{})});
+  E.showInfo.addEventListener('click', showAudioInfo);
+  E.okBtn2.addEventListener('click', ()=>record(true));
+  E.koBtn2.addEventListener('click', ()=>record(false));
+  E.next2.addEventListener('click', next);
+
+  // Pré-chargement
+  document.getElementById('preloadBtn').addEventListener('click', preloadAudios);
+
+  // visibility → pause
+  document.addEventListener('visibilitychange', ()=>{if(document.hidden) pauseTimer(); else resumeTimer();});
+  window.addEventListener('blur', pauseTimer);
+  window.addEventListener('focus', resumeTimer);
+}
+
+    function toggleReciter(){
+      const isAudio = E.mode.value==="audio";
+      E.reciterSection.style.display = isAudio ? 'block' : 'none';
+    }
+
+    function setEndMax(){
+      const endS = getSurah(parseInt(E.endSurah.value));
+      E.endVerse.max = endS.versets; E.endVerse.value=endS.versets;
+    }
+    function validateStart(){
+      const s = getSurah(parseInt(E.startSurah.value));
+      let v = parseInt(E.startVerse.value||"1");
+      if(v> s.versets){E.startVerse.value=s.versets; showErr(E.startVerseErr, `الحد الأقصى للآيات في هذه السورة هو ${s.versets}`)}
+      else if(v<1){E.startVerse.value=1; hideErr(E.startVerseErr)}
+      else hideErr(E.startVerseErr);
+    }
+    function validateEnd(){
+      const s = getSurah(parseInt(E.endSurah.value));
+      let v = parseInt(E.endVerse.value||"1");
+      if(v> s.versets){E.endVerse.value=s.versets; showErr(E.endVerseErr, `الحد الأقصى للآيات في هذه السورة هو ${s.versets}`)}
+      else if(v<1){E.endVerse.value=1; hideErr(E.endVerseErr)}
+      else hideErr(E.endVerseErr);
+    }
+    function showErr(el, msg){el.textContent=msg; el.classList.add('show')}
+    function hideErr(el){el.classList.remove('show')}
+
+    function updateTotals(){
+      const a=parseInt(E.startSurah.value), b=parseInt(E.endSurah.value);
+      const va=parseInt(E.startVerse.value||"1"), vb=parseInt(E.endVerse.value||"1");
+      if(a>b){E.totalVerses.textContent="0";return}
+      let total=0;
+      for(let i=a;i<=b;i++){
+        const s=getSurah(i);
+        if(i===a && i===b) total += Math.max(0, vb - va + 1);
+        else if(i===a) total += Math.max(0, s.versets - va + 1);
+        else if(i===b) total += Math.max(0, vb);
+        else total += s.versets;
+      }
+      E.totalVerses.textContent = total;
+    }
+
+    function getSurah(n){return SOURATES.find(x=>x.num===n)}
+
+    function startQuiz(){
+      // validations
+      const a=parseInt(E.startSurah.value), b=parseInt(E.endSurah.value);
+      const va=parseInt(E.startVerse.value||"1"), vb=parseInt(E.endVerse.value||"1");
+      if(a>b){return alert("السورة الأولى يجب أن تكون قبل السورة الأخيرة")}
+      if(a===b && va>vb){return alert("رقم الآية الأولى يجب أن يكون قبل رقم الآية الأخيرة")}
+      if(parseInt(E.totalVerses.textContent)===0){return alert("لا توجد آيات في النطاق المحدد")}
+      // état
+      state = {
+        startTime:new Date(), endTime:null, activeMs:0, lastTick:Date.now(), active:true, timer:null,
+        ok:0, ko:0, questions:[], idx:0, mode:E.mode.value, reciter:E.reciter.value, history:[]
+      };
+      // générer questions uniques
+      const qs=[];
+      for(let s=a;s<=b;s++){
+        const S=getSurah(s);
+        const from = (s===a) ? va : 1;
+        const to   = (s===b) ? Math.min(vb,S.versets) : S.versets;
+        for(let v=from;v<=to;v++){
+          qs.push({surah:s, verse:v, name:S.nom});
+        }
+      }
+      shuffle(qs);
+      // limiter par tentatives sauf infini
+      const att = E.attempts.value==="infinite" ? qs.length : Math.min(parseInt(E.attempts.value), qs.length);
+      state.questions = qs.slice(0, att);
+      // UI
+      E.tot.textContent = state.questions.length; E.cur.textContent="1";
+      E.ok.textContent="0"; E.ko.textContent="0"; E.time.textContent="00:00:00";
+      goto('quiz');
+      startTimer();
+      showQuestion();
+      requestWakeLock();    // Activer Wake Lock au début du quiz
+      saveQuizState();      // Sauvegarder l'état initial
+    }
+
+    function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+    function goto(id){
+    for(const k of Object.keys(E.pages)) E.pages[k].classList.remove('active');
+    E.pages[id].classList.add('active');
+    if(id==='home'){
+      stopTimer();
+      clearQuizState();  // Nettoyer quand on retourne à l'accueil
+    }
+  }
+
+    function startTimer(){
+      stopTimer();
+      state.lastTick = Date.now(); state.active=true;
+      state.timer = setInterval(()=>{
+        if(!state.active) return;
+        const now=Date.now(); state.activeMs += (now-state.lastTick); state.lastTick=now;
+        E.time.textContent = fmtMs(state.activeMs);
+      }, 1000);
+    }
+    function pauseTimer(){ if(state.active){ state.active=false; } }
+    function resumeTimer(){ if(!state.active){ state.lastTick = Date.now(); state.active=true; } }
+    function stopTimer(){ if(state.timer){ clearInterval(state.timer); state.timer=null; } }
+    
+    // Sauvegarder l'état du quiz
+    function saveQuizState() {
+      if (state.questions.length > 0) {
+        const toSave = {
+          ...state,
+          startTime: state.startTime ? state.startTime.toISOString() : null,
+          endTime: state.endTime ? state.endTime.toISOString() : null,
+          history: state.history.map(h => ({
+            ...h,
+            at: h.at.toISOString()
+          }))
+        };
+        sessionStorage.setItem('quizState', JSON.stringify(toSave));
+      }
+    }
+
+   // Restaurer l'état du quiz
+    function restoreQuizIfNeeded() {
+      const saved = sessionStorage.getItem('quizState');
+      if (!saved) return;
+  
+      try {
+        const restored = JSON.parse(saved);
+    
+    // Restaurer l'état
+    state = {
+      ...restored,
+      startTime: restored.startTime ? new Date(restored.startTime) : null,
+      endTime: restored.endTime ? new Date(restored.endTime) : null,
+      history: restored.history.map(h => ({
+        ...h,
+        at: new Date(h.at)
+      })),
+      timer: null  // Le timer sera redémarré
+    };
+    
+    // Restaurer l'UI
+        E.tot.textContent = state.questions.length;
+        E.cur.textContent = (state.idx + 1).toString();
+        E.ok.textContent = state.ok.toString();
+        E.ko.textContent = state.ko.toString();
+        E.time.textContent = fmtMs(state.activeMs);
+    
+    // Afficher la page quiz
+        goto('quiz');
+        startTimer();
+        showQuestion();
+        requestWakeLock();
+    
+        console.log('Quiz restauré avec succès');
+      } catch (e) {
+        console.error('Erreur de restauration:', e);
+        sessionStorage.removeItem('quizState');
+      }
+    }
+
+   // Effacer la sauvegarde
+    function clearQuizState() {
+      sessionStorage.removeItem('quizState');
+      releaseWakeLock();
+    }
+
+    function fmtMs(ms){
+      const s=Math.floor(ms/1000);
+      const h=String(Math.floor(s/3600)).padStart(2,'0');
+      const m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+      const ss=String(s%60).padStart(2,'0');
+      return `${h}:${m}:${ss}`;
+    }
+
+    function showQuestion(){
+      if(state.idx>=state.questions.length){ return endQuiz(); }
+      const q=state.questions[state.idx];
+      E.cur.textContent = (state.idx+1).toString();
+      if(state.mode==="text"){
+        // afficher ref
+        E.textMode.style.display='block'; E.audioMode.style.display='none';
+        E.vNum.textContent=q.verse; E.sName.textContent=q.name;
+        E.vText.style.display='none'; E.vText.innerHTML='';
+        E.answersText.style.display='none'; E.next1.style.display='none'; E.showVerse.style.display='inline-block';
+      }else{
+        // audio
+        E.textMode.style.display='none'; E.audioMode.style.display='block';
+        E.info.style.display='none'; E.answersAudio.style.display='none'; E.next2.style.display='none'; E.showInfo.style.display='inline-block';
+        loadAudio(q);
+      }
+    }
+
+    async function showVerseText(){
+  const q = state.questions[state.idx];
+  E.vText.innerHTML = '<span class="loading"></span>';
+  E.vText.style.display = 'block';
+  
+  try {
+    const key = `${q.surah}:${q.verse}`;
+    
+    if (!versesData) {
+      throw new Error('Données non chargées');
+    }
+    
+    const verseData = versesData[key];
+    if (!verseData) {
+      throw new Error(`Verset ${key} non trouvé`);
+    }
+    
+    window.currentAyahInfo = {
+      text: verseData.text,
+      surah: q.surah,
+      surah_name: verseData.surah_name,
+      verse: q.verse,
+      page: verseData.page,
+      juz: verseData.juz
+    };
+    
+    E.vText.innerHTML = `<div style="font-size:24px;line-height:1.9;color:#0f172a">${verseData.text}</div>`;
+    
+  } catch(e) {
+    console.error('Erreur:', e);
+    E.vText.innerHTML = `<div style="color:var(--red)">خطأ: ${e.message}</div>`;
+  }
+  
+  E.answersText.style.display = 'flex';
+  E.showVerse.style.display = 'none';
+}
+
+    function audioUrlEveryAyah(reciterId,surah,verse){
+      const r = RECITERS.find(x=>x.id===reciterId) || RECITERS[0];
+      const s = String(surah).padStart(3,'0');
+      const v = String(verse).padStart(3,'0');
+      return `https://everyayah.com/data/${r.path}/${s}${v}.mp3`;
+    }
+    function audioFallbacks(surah,verse){
+      // Fallback alquran.cloud (media per ayah)
+      return [
+        `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${surah}${String(verse).padStart(3,'0')}.mp3`,
+        `https://api.alquran.cloud/v1/ayah/${surah}:${verse}/ar.alafasy` // media endpoint accepte GET -> redirection/JSON; gardé en secours
+      ];
+    }
+
+    async function loadAudio(q){
+  try {
+    const s = String(q.surah).padStart(3,'0');
+    const v = String(q.verse).padStart(3,'0');
+    const reciterPath = RECITERS.find(x=>x.id===state.reciter)?.path || 'Hudhaify_128kbps';
+    const audioPath = `./audios/${reciterPath}/${s}${v}.mp3`;
+    
+    console.log('🔊 Chargement:', audioPath);
+    
+    E.player.src = audioPath;
+    
+    // ATTENDRE que loadstart se déclenche (pas canplaythrough!)
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        E.player.removeEventListener('loadstart', onLoadStart);
+        E.player.removeEventListener('error', onError);
+        resolve(); // Résoudre même si pas de loadstart (offline)
+      }, 500);
+      
+      const onLoadStart = () => {
+        clearTimeout(timeout);
+        E.player.removeEventListener('loadstart', onLoadStart);
+        E.player.removeEventListener('error', onError);
+        resolve();
+      };
+      
+      const onError = (e) => {
+        clearTimeout(timeout);
+        E.player.removeEventListener('loadstart', onLoadStart);
+        E.player.removeEventListener('error', onError);
+        reject(e);
+      };
+      
+      E.player.addEventListener('loadstart', onLoadStart, {once: true});
+      E.player.addEventListener('error', onError, {once: true});
+    });
+    
+    await E.player.play().catch(err => console.warn('⚠️ Autoplay:', err.message));
+    console.log('✅ Audio chargé');
+    
+  } catch(err) {
+    console.error('❌ Erreur audio:', err);
+  }
+}
+
+    // Ligne 553 (remplacez l’ancienne fonction showAudioInfo):
+async function showAudioInfo(){
+  const q = state.questions[state.idx];
+  
+  try {
+    const key = `${q.surah}:${q.verse}`;
+    
+    if (!versesData) {
+      throw new Error('Données non chargées');
+    }
+    
+    const verseData = versesData[key];
+    if (!verseData) {
+      throw new Error(`Verset ${key} non trouvé`);
+    }
+    
+    E.tAudio.textContent = verseData.text;
+    E.sAudio.textContent = verseData.surah_name;
+    E.nAudio.textContent = verseData.verse;
+    E.pAudio.textContent = verseData.page;
+    E.jAudio.textContent = verseData.juz;
+    
+  } catch(e) {
+    console.error('Erreur:', e);
+    E.tAudio.textContent = "خطأ: " + e.message;
+    E.sAudio.textContent = "؟";
+    E.nAudio.textContent = "؟";
+    E.pAudio.textContent = "؟";
+    E.jAudio.textContent = "؟";
+  }
+  
+  E.info.style.display = 'block';
+  E.answersAudio.style.display = 'flex';
+  E.showInfo.style.display = 'none';
+}
+
+    function approxPage(surah,verse){
+      // Règles connues exigées:
+      if(surah===1) return 1;
+      if(surah===2 && verse<=5) return 2;
+      // Approximation (remplacer par table réelle pour exactitude parfaite)
+      const before = totalVersesBefore(surah);
+      const total = before + verse;
+      return Math.max(1, Math.min(604, Math.ceil(total/10.32)));
+    }
+    function approxJuz(surah,verse){
+      const before = totalVersesBefore(surah);
+      const total = before + verse;
+      return Math.max(1, Math.min(30, Math.ceil(total/208)));
+    }
+    function totalVersesBefore(surah){
+      let sum=0; for(const s of SOURATES){ if(s.num<surah) sum+=s.versets; } return sum;
+    }
+
+    function record(isOk){
+  const q=state.questions[state.idx];
+  if(isOk){ state.ok++; E.ok.textContent=state.ok; } else { state.ko++; E.ko.textContent=state.ko; }
+  state.history.push({
+    q, isOk, at:new Date()
+  });
+  if(state.mode==="text"){
+    E.answersText.style.display='none'; E.next1.style.display='inline-block';
+  }else{
+    E.answersAudio.style.display='none'; E.next2.style.display='inline-block';
+  }
+  saveQuizState();  // Sauvegarder après chaque réponse
+}    
+
+    function next(){ 
+     state.idx++; 
+     saveQuizState();    // Sauvegarder avant de changer de question
+     showQuestion(); 
+   }
+
+    function endQuiz(){
+      stopTimer();
+      state.endTime = new Date();
+      // remplir résultats
+      E.fOk.textContent = state.ok.toString();
+      E.fKo.textContent = state.ko.toString();
+      E.fTime.textContent = fmtMs(state.activeMs);
+      E.tStart.textContent = state.startTime.toLocaleString('fr-FR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      E.tEnd.textContent = state.endTime.toLocaleString('fr-FR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      const tot = state.ok + state.ko;
+      const pct = tot>0 ? Math.round((state.ok/tot)*100) : 0;
+      E.pct.textContent = pct.toString()+'%';
+      // historique
+      E.hist.innerHTML = state.history.map((h,i)=>{
+        const cls = h.isOk ? 'ok' : 'ko';
+        const icon = h.isOk ? '✓' : '✗';
+        const when = h.at.toLocaleString('fr-FR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        return `<div class="item ${cls}">
+          <strong>${icon} السؤال ${i+1}:</strong> الآية <span class="blue">${h.q.verse}</span> من سورة <span class="blue">${h.q.name}</span>
+          <br><small>الوقت: ${when}</small>
+        </div>`;
+      }).join('');
+      goto('results');
+      clearQuizState();     // Nettoyer la sauvegarde à la fin du quiz
+    }
+
+    // Service Worker inline (cache de base)
+    // Service Worker externe
+function registerSW(){
+  if(!('serviceWorker' in navigator)) return;
+  
+  // Essayer d'abord le SW local dans le dossier racine
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => {
+      console.log('✅ Service Worker enregistré (racine)');
+      
+      // Écouter les mises à jour
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('🔄 Nouvelle version disponible');
+          }
+        });
+      });
+    })
+    .catch(err => {
+      console.warn('⚠️ Erreur SW racine, fallback vers ancien chemin:', err);
+      
+      // Fallback vers l'ancien chemin
+      navigator.serviceWorker.register('/AudioVersets_V1_Hors_Connexion/sw.js')
+        .then(reg => console.log('✅ Service Worker enregistré (fallback)'))
+        .catch(err => console.error('❌ Erreur SW:', err));
+    });
+}
+  </script>
+</body>
+</html>
