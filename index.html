@@ -852,12 +852,12 @@ async function preloadAudios() {
   const startSurah = parseInt(E.startSurah.value);
   const endSurah = parseInt(E.endSurah.value);
   
-  // Si même sourate ET startVerse > endVerse, alors startVerse = 1
   if(startSurah === endSurah) {
     const startVerseVal = parseInt(E.startVerse.value||"1");
     const endVerseVal = parseInt(E.endVerse.value||"1");
     
     if(startVerseVal > endVerseVal) {
+      // alert(`⚠️ رقم الآية الأخيرة يجب أن يكون أكبر من أو يساوي رقم الآية الأولى (${startVerseVal})\nتم إعادة تعيين الآية الأولى إلى 1`);
       E.startVerse.value = "1";
     }
   }
