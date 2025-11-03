@@ -364,6 +364,24 @@
   }
 }
 
+/* Animation clignotante rouge pour les questions */
+@keyframes blink-red {
+  0%, 100% { 
+    color: #1e40af;
+    font-size: 1em;
+    transform: scale(1);
+  }
+  50% { 
+    color: #dc2626;
+    font-size: 1.15em;
+    transform: scale(1.05);
+  }
+}
+
+.qtext.blink {
+  animation: blink-red 0.6s ease-in-out 4;
+}
+
   </style>
 </head>
 <body>
@@ -1148,6 +1166,25 @@ function hideQuranBook() {
       if(state.idx>=state.questions.length){ return endQuiz(); }
       const q=state.questions[state.idx];
       E.cur.textContent = (state.idx+1).toString();
+
+      // === Animation CLIGNOTEMENT question ===
+      if(state.mode==="text"){
+        const questionElem = E.textMode.querySelector('.qtext');
+        if (questionElem) {
+          questionElem.classList.remove('blink');
+          void questionElem.offsetWidth;
+          questionElem.classList.add('blink');
+        }
+      } else {
+        const questionElem = E.audioMode.querySelector('.qtext');
+        if (questionElem) {
+          questionElem.classList.remove('blink');
+          void questionElem.offsetWidth;
+          questionElem.classList.add('blink');
+        }
+      }
+      // === FIN animation clignotement ===
+
       if(state.mode==="text"){
         // afficher ref
         E.textMode.style.display='block'; E.audioMode.style.display='none';
@@ -1156,8 +1193,7 @@ function hideQuranBook() {
         E.answersText.style.display='none'; if(E.next1) E.next1.style.display='none'; E.showVerse.style.display='inline-block';
         const showBookBtn = E.textMode.querySelector('#showBook');
         if (showBookBtn) showBookBtn.style.display = 'inline-block'; // Réafficher le bouton
-
-            }else{
+      }else{
         // audio
         E.textMode.style.display='none'; E.audioMode.style.display='block';
         E.info.style.display='none'; E.answersAudio.style.display='none'; if(E.next2) E.next2.style.display='none'; E.showInfo.style.display='inline-block';
@@ -1165,7 +1201,7 @@ function hideQuranBook() {
         if (showBookBtn) showBookBtn.style.display = 'inline-block'; // Réafficher le bouton
         loadAudio(q);
       }
-    }
+}
 
     async function showVerseText(){
   const q = state.questions[state.idx];
