@@ -96,20 +96,24 @@
   border-radius: 4px;
 }
 
-/* Verset coranique sur une ligne, scroll horizontal */
-#info > div:first-child span#tAudio {
-  display: inline-block;
-  white-space: nowrap;
-  overflow-x: auto;
-  max-width: 100vw;
-  direction: rtl;
-  padding: 2px 6px;
-  vertical-align: middle;
-}
+/* Verset coranique - 2 lignes FIXES + scroll VERTICAL */
 #info > div:first-child {
-  overflow-x: auto;
-  max-width: 100vw;
-  white-space: nowrap;
+  background-color: #fff9c4;  /* jaune très clair */
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 4.7em;  /* EXACTEMENT 2 lignes (1.8em × 2) */
+  overflow-y: auto;  /* Scroll VERTICAL si texte dépasse 2 lignes */
+  overflow-x: hidden;  /* Pas de scroll horizontal */
+  white-space: normal;  /* Texte s'enroule naturellement */
+  word-wrap: break-word;
+  direction: rtl;
+  line-height: 1.8;
+  display: block;
+}
+
+#info > div:first-child span#tAudio {
+  display: inline;
+  padding: 2px 6px;
 }
 
 /* Fond jaune pour numéro du verset et nom de la sourate en mode texte */
@@ -189,6 +193,177 @@
       .qtext,.verset,.history .item{background:rgba(30,41,59,.95);color:#e5e7eb}
       select,input[type=number]{background:#0f172a;color:#f8fafc;border-color:#334155}
     }
+
+/* Livre du Coran - Pages visuelles */
+.quran-book {
+  display: none;
+  margin: 16px auto;
+  background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  max-width: 600px;
+  position: relative;
+}
+
+.quran-book.show {
+  display: block;
+  animation: bookOpen 0.4s ease;
+}
+
+@keyframes bookOpen {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.book-pages {
+  display: flex;
+  gap: 4px;
+  background: #2c1810;
+  border-radius: 4px;
+  padding: 4px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.4);
+}
+
+.book-page {
+  flex: 1;
+  background: #fffef7;
+  border-radius: 4px;
+  min-height: 180px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  border: 2px solid #d4af37;
+}
+
+.book-page.empty {
+  background: #f5f5dc;
+  opacity: 0.4;
+}
+
+.book-page.left {
+  border-right: 1px solid #d4af37;
+}
+
+.book-page.right {
+  border-left: 1px solid #d4af37;
+}
+
+.page-number {
+  font-family: 'Amiri', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: #1e40af;
+  text-shadow: 0 2px 4px rgba(0,0,0,.1);
+  margin-bottom: 8px;
+}
+
+.page-lines {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0.3;
+}
+
+.page-line {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #666, transparent);
+  border-radius: 2px;
+}
+
+.page-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.page-side-indicator {
+  position: absolute;
+  top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e40af;
+  background: rgba(255,255,255,0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.book-page.left .page-side-indicator {
+  left: 8px;
+}
+
+.book-page.right .page-side-indicator {
+  right: 8px;
+}
+
+@media (max-width: 768px) {
+  .quran-book {
+    padding: 12px;
+    max-width: 100%;
+  }
+  
+  .book-page {
+    min-height: 140px;
+  }
+  
+  .page-number {
+    font-size: 32px;
+  }
+  
+  .page-lines {
+    gap: 6px;
+  }
+}
+
+/* Badge du numéro du verset - À L'EXTÉRIEUR DU LIVRE */
+.verse-number-badge {
+  position: absolute;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: white;
+  font-family: 'Amiri', serif;
+  font-size: 24px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  z-index: 100;
+  opacity: 1 !important;
+  display: block !important;
+  width: max-content;
+}
+
+.verse-number-badge[data-position="left"] {
+  left: -120px;
+}
+
+.verse-number-badge[data-position="right"] {
+  right: -120px;
+}
+
+@media (max-width: 768px) {
+  .verse-number-badge {
+    font-size: 20px;
+    padding: 10px 16px;
+  }
+  
+  .verse-number-badge[data-position="left"] {
+    left: -100px;
+  }
+  
+  .verse-number-badge[data-position="right"] {
+    right: -100px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -237,11 +412,11 @@
             <div class="group">
               <label>عدد المحاولات:</label>
               <select id="attempts">
+                <option value="infinite">لا نهائي</option>
                 <option value="5">5 محاولات</option>
                 <option value="10">10 محاولات</option>
                 <option value="15">15 محاولة</option>
-                <option value="20">20 محاولة</option>
-                <option value="infinite">لا نهائي</option>
+                <option value="20">20 محاولة</option>              
               </select>
             </div>
             <div class="group">
@@ -285,6 +460,23 @@
           <button id="homeBtn" class="btn btn-neutral">العودة للرئيسية</button>
         </div>
 
+        <!-- Livre du Coran visuel -->
+<div id="quranBook" class="quran-book">
+  <div class="book-pages">
+    <!-- Page de gauche (paire) -->
+    <div id="leftPage" class="book-page left empty">
+      <span class="page-side-indicator">الصفحة اليمنى</span>
+      <div id="leftContent"></div>
+    </div>
+    
+    <!-- Page de droite (impaire) -->
+    <div id="rightPage" class="book-page right empty">
+      <span class="page-side-indicator">الصفحة اليسرى</span>
+      <div id="rightContent"></div>
+    </div>
+  </div>
+</div>
+
         <div class="qwrap">
           <div id="qCounter" class="qcounter"></div>
 
@@ -295,12 +487,13 @@
             </div>
             <div id="vText" class="verset" style="display:none"></div>
             <div class="controls">
+              <button id="showBook" class="btn btn-amber">📖 عرض الصفحة</button>
               <button id="showVerse" class="btn btn-primary">عرض النص</button>
               <div id="answersText" style="display:none;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
                 <button id="okBtn1" class="btn btn-green">إجابة صحيحة</button>
                 <button id="koBtn1" class="btn btn-red">إجابة خاطئة</button>
               </div>
-              <button id="next1" class="btn btn-purple" style="display:none">السؤال التالي</button>
+              
             </div>
           </div>
 
@@ -320,12 +513,13 @@
               <div>رقم الجزء: <span id="jAudio" class="blue"></span></div>
             </div>
             <div class="controls">
+              <button id="showBook" class="btn btn-amber">📖 عرض الصفحة</button>
               <button id="showInfo" class="btn btn-primary">عرض المعلومات</button>
               <div id="answersAudio" style="display:none;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
                 <button id="okBtn2" class="btn btn-green">إجابة صحيحة</button>
                 <button id="koBtn2" class="btn btn-red">إجابة خاطئة</button>
               </div>
-              <button id="next2" class="btn btn-purple" style="display:none">التالي</button>
+              
             </div>
           </div>
         </div>
@@ -441,7 +635,13 @@
       info:byId('info'),tAudio:byId('tAudio'),sAudio:byId('sAudio'),nAudio:byId('nAudio'),pAudio:byId('pAudio'),jAudio:byId('jAudio'),
       answersAudio:byId('answersAudio'),okBtn2:byId('okBtn2'),koBtn2:byId('koBtn2'),next2:byId('next2'),
       fOk:byId('fOk'),fKo:byId('fKo'),fTime:byId('fTime'),tStart:byId('tStart'),tEnd:byId('tEnd'),pct:byId('pct'),hist:byId('hist'),
-      newQuiz:byId('newQuiz'),nosleep:byId('nosleep'),qCounter:byId('qCounter'),textMode:byId('textMode'),audioMode:byId('audioMode')
+    
+quranBook:byId('quranBook'),
+leftPage:byId('leftPage'),
+rightPage:byId('rightPage'),
+leftContent:byId('leftContent'),
+rightContent:byId('rightContent'),
+  newQuiz:byId('newQuiz'),nosleep:byId('nosleep'),qCounter:byId('qCounter'),textMode:byId('textMode'),audioMode:byId('audioMode')
     };
     function byId(id){return document.getElementById(id)}
 
@@ -584,10 +784,88 @@ async function preloadAudios() {
 }
 
     function bindEvents(){
-  E.startSurah.addEventListener('change', ()=>{clearQuizState(); validateStart();updateTotals()});
-  E.endSurah.addEventListener('change', ()=>{clearQuizState(); setEndMax();validateEnd();updateTotals()});
-  E.startVerse.addEventListener('input', ()=>{clearQuizState(); validateStart();updateTotals()});
-  E.endVerse.addEventListener('input', ()=>{clearQuizState(); validateEnd();updateTotals()});
+  // Premier filtre SOURATES : change endSurah si startSurah > endSurah ET réinitialise versets
+  E.startSurah.addEventListener('change', ()=>{
+    clearQuizState();
+    const startVal = parseInt(E.startSurah.value);
+    const endVal = parseInt(E.endSurah.value);
+    
+    // Si startSurah > endSurah, change endSurah
+    if(startVal > endVal) {
+      E.endSurah.value = startVal;
+      setEndMax();
+    }
+    
+    // Réinitialise les versets : startVerse = 1
+    E.startVerse.value = "1";
+    
+    // Si même sourate, limiter endVerse au max de cette sourate
+    if(startVal === endVal) {
+      const s = getSurah(startVal);
+      E.endVerse.value = s.versets;
+      E.endVerse.max = s.versets;
+    } else {
+      setEndMax();
+    }
+    
+    validateStart();
+    updateTotals();
+  });
+
+  // Deuxième filtre SOURATES : change startSurah si endSurah < startSurah
+  E.endSurah.addEventListener('change', ()=>{
+    clearQuizState();
+    const endVal = parseInt(E.endSurah.value);
+    const startVal = parseInt(E.startSurah.value);
+    
+    if(endVal < startVal) {
+      E.startSurah.value = endVal;
+      E.startVerse.value = "1";
+    }
+    
+    setEndMax();
+    validateEnd();
+    updateTotals();
+  });
+
+  E.startVerse.addEventListener('input', ()=>{
+  clearQuizState();
+  const startSurah = parseInt(E.startSurah.value);
+  const endSurah = parseInt(E.endSurah.value);
+  
+  if(startSurah === endSurah) {
+    const startVerseVal = parseInt(E.startVerse.value||"1");
+    const endVerseVal = parseInt(E.endVerse.value||"1");
+    
+    if(startVerseVal > endVerseVal) {
+      alert(`⚠️ رقم الآية الأولى يجب أن يكون أقل من أو يساوي رقم الآية الأخيرة (${endVerseVal}) !\nتم إعادة تعيينه إلى 1`);
+      E.startVerse.value = "1";
+    }
+  }
+  
+  validateStart();
+  updateTotals();
+});
+
+  E.endVerse.addEventListener('input', ()=>{
+  clearQuizState();
+  const startSurah = parseInt(E.startSurah.value);
+  const endSurah = parseInt(E.endSurah.value);
+  
+  // Si même sourate ET startVerse > endVerse, alors startVerse = 1
+  if(startSurah === endSurah) {
+    const startVerseVal = parseInt(E.startVerse.value||"1");
+    const endVerseVal = parseInt(E.endVerse.value||"1");
+    
+    if(startVerseVal > endVerseVal) {
+      E.startVerse.value = "1";
+    }
+  }
+  
+  validateEnd();
+  updateTotals();
+});
+
   E.mode.addEventListener('change', ()=>{
     clearQuizState();
     toggleReciter();
@@ -605,17 +883,21 @@ async function preloadAudios() {
   E.showVerse.addEventListener('click', showVerseText);
   E.okBtn1.addEventListener('click', ()=>record(true));
   E.koBtn1.addEventListener('click', ()=>record(false));
-  E.next1.addEventListener('click', next);
 
   // audio
   E.replay.addEventListener('click', ()=>{E.player.currentTime=0;E.player.play().catch(()=>{})});
   E.showInfo.addEventListener('click', showAudioInfo);
   E.okBtn2.addEventListener('click', ()=>record(true));
   E.koBtn2.addEventListener('click', ()=>record(false));
-  E.next2.addEventListener('click', next);
 
   // Pré-chargement
   document.getElementById('preloadBtn').addEventListener('click', preloadAudios);
+
+  // Afficher le livre avant la réponse
+  const showBookBtns = document.querySelectorAll('#showBook');
+  showBookBtns.forEach(btn => {
+    btn.addEventListener('click', showBook);
+  });
 
   // visibility → pause
   document.addEventListener('visibilitychange', ()=>{if(document.hidden) pauseTimer(); else resumeTimer();});
@@ -710,6 +992,7 @@ async function preloadAudios() {
     if(id==='home'){
       stopTimer();
       clearQuizState();  // Nettoyer quand on retourne à l'accueil
+      hideQuranBook();
     }
   }
 
@@ -796,7 +1079,72 @@ async function preloadAudios() {
       return `${h}:${m}:${ss}`;
     }
 
+    function showQuranBook(pageNum, verseNum) {
+  if (!pageNum || pageNum < 1 || pageNum > 604) {
+    E.quranBook.classList.remove('show');
+    return;
+  }
+  
+  const isOdd = pageNum % 2 !== 0; // impair = droite dans le Coran
+  
+  // Réinitialiser
+  E.leftPage.classList.add('empty');
+  E.rightPage.classList.add('empty');
+  E.leftContent.innerHTML = '';
+  E.rightContent.innerHTML = '';
+  
+  // Enlever ancien badge s'il existe
+  const oldBadge = E.quranBook.querySelector('.verse-number-badge');
+  if (oldBadge) oldBadge.remove();
+  
+  if (isOdd) {
+    // Page impaire → DROITE (mais dans HTML c'est LEFT à cause du RTL!)
+    E.leftPage.classList.remove('empty');  
+    E.leftContent.innerHTML = `            
+      <div class="page-number">${pageNum}</div>
+      <div class="page-lines">
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+      </div>
+      <div class="page-label">صفحة ${pageNum}</div>
+    `;
+  } else {
+    // Page paire → GAUCHE (mais dans HTML c'est RIGHT à cause du RTL!)
+    E.rightPage.classList.remove('empty'); 
+    E.rightContent.innerHTML = `           
+      <div class="page-number">${pageNum}</div>
+      <div class="page-lines">
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+      </div>
+      <div class="page-label">صفحة ${pageNum}</div>
+    `;
+  }
+  
+  // Ajouter le badge du verset à l'extérieur
+  if (verseNum) {
+    const badge = document.createElement('div');
+    badge.className = 'verse-number-badge';
+    badge.setAttribute('data-position', isOdd ? 'right' : 'left');
+    badge.textContent = verseNum;
+    E.quranBook.appendChild(badge);
+  }
+  
+  E.quranBook.classList.add('show');
+}
+
+function hideQuranBook() {
+  E.quranBook.classList.remove('show');
+}
+
     function showQuestion(){
+    // hideQuranBook(); // NE PAS cacher le livre ici
       if(state.idx>=state.questions.length){ return endQuiz(); }
       const q=state.questions[state.idx];
       E.cur.textContent = (state.idx+1).toString();
@@ -805,11 +1153,16 @@ async function preloadAudios() {
         E.textMode.style.display='block'; E.audioMode.style.display='none';
         E.vNum.textContent=q.verse; E.sName.textContent=q.name;
         E.vText.style.display='none'; E.vText.innerHTML='';
-        E.answersText.style.display='none'; E.next1.style.display='none'; E.showVerse.style.display='inline-block';
-      }else{
+        E.answersText.style.display='none'; if(E.next1) E.next1.style.display='none'; E.showVerse.style.display='inline-block';
+        const showBookBtn = E.textMode.querySelector('#showBook');
+        if (showBookBtn) showBookBtn.style.display = 'inline-block'; // Réafficher le bouton
+
+            }else{
         // audio
         E.textMode.style.display='none'; E.audioMode.style.display='block';
-        E.info.style.display='none'; E.answersAudio.style.display='none'; E.next2.style.display='none'; E.showInfo.style.display='inline-block';
+        E.info.style.display='none'; E.answersAudio.style.display='none'; if(E.next2) E.next2.style.display='none'; E.showInfo.style.display='inline-block';
+        const showBookBtn = E.audioMode.querySelector('#showBook');
+        if (showBookBtn) showBookBtn.style.display = 'inline-block'; // Réafficher le bouton
         loadAudio(q);
       }
     }
@@ -840,8 +1193,15 @@ async function preloadAudios() {
       juz: verseData.juz
     };
     
-    E.vText.innerHTML = `<div style="font-size:24px;line-height:1.9;color:#0f172a">${verseData.text}</div>`;
+        E.vText.innerHTML = `<div style="font-size:24px;line-height:1.9;color:#0f172a">${verseData.text}</div>`;
     
+    // Afficher le livre du Coran avec la page
+showQuranBook(verseData.page, q.verse);
+
+    // Masquer le bouton "عرض الصفحة" pendant la réponse
+    const showBookBtn = E.textMode.querySelector('#showBook');
+    if (showBookBtn) showBookBtn.style.display = 'none';
+
   } catch(e) {
     console.error('Erreur:', e);
     E.vText.innerHTML = `<div style="color:var(--red)">خطأ: ${e.message}</div>`;
@@ -931,6 +1291,13 @@ async function showAudioInfo(){
     E.nAudio.textContent = verseData.verse;
     E.pAudio.textContent = verseData.page;
     E.jAudio.textContent = verseData.juz;
+
+    // Afficher le livre du Coran avec la page
+    showQuranBook(verseData.page, verseData.verse);
+
+    // Masquer le bouton "عرض الصفحة" pendant la réponse
+    const showBookBtn = E.audioMode.querySelector('#showBook');
+    if (showBookBtn) showBookBtn.style.display = 'none';
     
   } catch(e) {
     console.error('Erreur:', e);
@@ -944,6 +1311,79 @@ async function showAudioInfo(){
   E.info.style.display = 'block';
   E.answersAudio.style.display = 'flex';
   E.showInfo.style.display = 'none';
+}
+
+
+async function showBook() {
+  const q = state.questions[state.idx];
+  
+  try {
+    const key = `${q.surah}:${q.verse}`;
+    
+    if (!versesData) {
+      throw new Error('Données non chargées');
+    }
+    
+    const verseData = versesData[key];
+    if (!verseData) {
+      throw new Error(`Verset ${key} non trouvé`);
+    }
+    
+    // Afficher JUSTE le livre SANS le badge du verset
+    showQuranBookOnly(verseData.page);
+    
+  } catch(e) {
+    console.error('Erreur:', e);
+  }
+}
+
+function showQuranBookOnly(pageNum) {
+  if (!pageNum || pageNum < 1 || pageNum > 604) {
+    E.quranBook.classList.remove('show');
+    return;
+  }
+  
+  const isOdd = pageNum % 2 !== 0;
+  
+  // Réinitialiser
+  E.leftPage.classList.add('empty');
+  E.rightPage.classList.add('empty');
+  E.leftContent.innerHTML = '';
+  E.rightContent.innerHTML = '';
+  
+  // Enlever ancien badge s'il existe
+  const oldBadge = E.quranBook.querySelector('.verse-number-badge');
+  if (oldBadge) oldBadge.remove();
+  
+  if (isOdd) {
+    E.leftPage.classList.remove('empty');  
+    E.leftContent.innerHTML = `            
+      <div class="page-number">${pageNum}</div>
+      <div class="page-lines">
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+      </div>
+      <div class="page-label">صفحة ${pageNum}</div>
+    `;
+  } else {
+    E.rightPage.classList.remove('empty'); 
+    E.rightContent.innerHTML = `           
+      <div class="page-number">${pageNum}</div>
+      <div class="page-lines">
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+        <div class="page-line"></div>
+      </div>
+      <div class="page-label">صفحة ${pageNum}</div>
+    `;
+  }
+  
+  E.quranBook.classList.add('show');
 }
 
     function approxPage(surah,verse){
@@ -970,19 +1410,20 @@ async function showAudioInfo(){
   state.history.push({
     q, isOk, at:new Date()
   });
-  if(state.mode==="text"){
-    E.answersText.style.display='none'; E.next1.style.display='inline-block';
-  }else{
-    E.answersAudio.style.display='none'; E.next2.style.display='inline-block';
-  }
   saveQuizState();  // Sauvegarder après chaque réponse
+  
+  // Passer directement à la question suivante
+  setTimeout(() => {
+    next();
+  }, 500);
 }    
 
     function next(){ 
-     state.idx++; 
-     saveQuizState();    // Sauvegarder avant de changer de question
-     showQuestion(); 
-   }
+ state.idx++; 
+ hideQuranBook();    // Cacher le livre AVANT de montrer la prochaine question
+ saveQuizState();    // Sauvegarder avant de changer de question
+ showQuestion(); 
+}
 
     function endQuiz(){
       stopTimer();
